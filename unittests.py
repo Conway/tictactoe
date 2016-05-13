@@ -55,6 +55,10 @@ class TestCases(unittest.TestCase):
         self.assertEqual(board.get_all_openings(), [(x,y) for x in range(3) for y in range(2)], msg="The third column should be occupied")
         board.clear()
 
+        board[1] = 'x'
+        with self.assertRaises(ValueError):
+            board[1] = 'o'
+
     def test_cube(self):
         # tests all cube methods
         cube = Cube()
@@ -63,8 +67,14 @@ class TestCases(unittest.TestCase):
         idx = random.randint(0, len(possible_choices)-1)
         self.assertFalse(cube.check_wins(),msg="The cube is empty, a win should be impossible")
         for x in range(3):
-            cube.play_move(0, 0, x, possible_choices[idx])
+            cube.play_move(0, 0, x, possible_choices[idx]) # this plays 3 items in a row
         self.assertEqual(cube.check_wins(), possible_choices[idx])
+
+        cube.clear()
+        all_openings = [(x,y) for x in range(3) for y in range(3)]
+        self.assertEqual(cube.get_available_spaces(), {0:all_openings, 1:all_openings, 2:all_openings}, msg="All spaces should be open")
+
+
 
 if __name__ == '__main__':
     unittest.main()

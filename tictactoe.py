@@ -6,9 +6,10 @@ class Board:
 
     def __str__(self):
         # Stringifys the board for easy display, allows use of print()
-        to_ret = ""
+        out = ""
         for lst in self.matrix:
-            to_ret += str(lst) + "\n"
+            out += str(lst) + "\n"
+        return out
 
     def as_list(self):
         # converts the Board to a list for unittests
@@ -55,6 +56,8 @@ class Board:
     def __setitem__(self, location, val):
         # sets the item at a single-integer location
         assert(location < (self.dimension**2))
+        if self.check_opening(location//self.dimension, location%self.dimension) == False:
+            raise ValueError('This place is already taken. To override this place, use `set_val()`')
         self.matrix[location//self.dimension][location%self.dimension] = val
 
     def set_val(self, down, over, val, override=False):
@@ -92,6 +95,15 @@ class Cube:
     def __init__(self):
         # initializes a 3**3 board
         self.boards = [Board(), Board(), Board()]
+        self.allowed = ['x', 'o']
+
+    def __str__(self):
+        # stringifies the cube
+        out = ""
+        for x in range(3):
+            out += "---Board {0}---\n".format(str(x))
+            out += str(self.boards[x]) + "\n"
+        return out
 
     def get_available_spaces(self):
         # returns a dict that contains all open spaces - each value is a list of tuples of spaces
@@ -114,7 +126,7 @@ class Cube:
                     return self.boards[0][x]
 
             # 3D diagonal checks (yay!)
-            # straight diagonals (aka slices)
+            # straight diagonals
             for x in range(3):
                 if self.boards[0][x*3 + 0] == self.boards[1][x*3 + 1] == self.boards[2][x*3 + 2] and self.boards[0][x*3 + 0] != None:
                     return self.boards[0][x*3 + 0]
@@ -158,7 +170,86 @@ class Cube:
         assert(player in ['x', 'o'])
         self.boards[board].set_val(down, over, player)
 
-    def clear_boards(self):
+    def clear(self):
         # clears all boards
         for board in self.boards:
             board.clear()
+
+class HumanGame:
+    class Player:
+        def __init__(self, name, piece):
+            # creates an internal class to manage the player
+            assert(piece in ['x', 'o'])
+            self.name = name
+            self.piece = piece
+
+    def __init__(self):
+        self.cube = Cube()
+
+    def start(self):
+        self.cube.clear()
+        print('Welcome to 3D Tic Tac Toe!')
+        p1 = HumanGame.Player(input('Player 1, what is your name? '), 'x')
+        print('Hello {0}, you will be x'.format(p1.name))
+        p2 = HumanGame.Player(input('Player 2, what is your name? '), 'o')
+        print("Hello {0}, you will be o".format(p2.name))
+        moves_remaining = 27
+        run = True
+        while run == True:
+            p1_go = True
+            print(self.cube)
+            while p1_go:
+                try:
+                    board = int(input('{0}, please make your move. Which board? '.format(p1.name)))
+                    row = int(input('Please enter the row number (0-2): '))
+                    column = int(input('Please enter the column number (0-2): '))
+
+                    try:
+                        self.cube.play_move(board, row, column, p1.piece)
+                        moves_remaining -= 1
+                        p1_go = False
+                    except ValueError:
+                        print('Uh oh, looks like that spot is taken. Try again!')
+                except:
+                    print("Uh oh, please try that again")
+
+            result = self.cube.check_wins()
+            if result != False and result in self.cube.allowed:
+                print('Congratulations, {0}, you won!'.format(result))
+                run = False
+                break
+
+            if moves_remaining == 0:
+                print("Cat's game!")
+                run = False
+                break
+
+            p2_go = True
+            print(self.cube)
+            while p2_go:
+                try:
+                    board = int(input('{0}, please make your move. Which board? '.format(p2.name)))
+                    row = int(input('Please enter the row number (0-2): '))
+                    column = int(input('Please enter the column number (0-2): '))
+
+                    try:
+                        self.cube.play_move(board, row, column, p2.piece)
+                        moves_remaining -= 1
+                        p2_go = False
+                    except ValueError:
+                        print('Uh oh, looks like that spot is taken. Try again!')
+                except:
+                    print("Uh oh, please try that again")
+
+            result = self.cube.check_wins()
+            if result != False and result in self.cube.allowed:
+                print('Congratulations, {0}, you won!'.format(result))
+                run = False
+                break
+
+            if moves_remaining == 0:
+                print("Cat's game!")
+                run = False
+                break
+
+
