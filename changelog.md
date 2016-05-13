@@ -5,3 +5,4 @@
  - Created all unit tests for Board
  - Created some unit tests for Cube
  - Added Continuous Integration for Unittests (Travis CI)
+ - Added a small 2 player text based demo (`HumanGame`)
