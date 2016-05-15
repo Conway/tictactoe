@@ -1,5 +1,10 @@
 # changes
 
+## 5/15/15
+
+ - Added a AI game - 2 computers that play eachother.
+ - Refactored some methods. Changed some variables and methods to static (most notably `Cube.allowed`).
+
 ## 5/12/16
  - Created Board and Started Cube
  - Created all unit tests for Board
