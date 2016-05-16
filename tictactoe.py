@@ -543,3 +543,90 @@ class AIGame:
                 print("Cat's game!")
                 run = False
                 break
+
+class HumanAIGame:
+    def __init__(self):
+        self.cube = Cube()
+        self.p1 = None
+        self.p2 = Player('Computer', 'o', computer=True)
+
+    def setup(self):
+        name = input("Hello, what's your name?")
+        self.p1 = Player(name, 'x')
+        print("Hello {0}, you are 'x'".format(name))
+
+    def analyze_rows(self, player):
+        rows = self.cube.analyze_cube()
+        counts = {}
+        all_zero = True
+        for row in rows:
+            count_x = row.vals.count('x')
+            count_o = row.vals.count('o')
+            score = AIGame.score(count_x, count_o, player.piece)
+            if score != 0:
+                all_zero = False
+            counts[row.key] = score
+        if all_zero == True:
+            random_space = self.cube.random_open_space()
+            self.cube.play_move(random_space[0], random_space[1], random_space[2], player.piece)
+        sorted_counts = sorted(counts.items(), key=operator.itemgetter(1), reverse=True)
+        sorted_rows = []
+        for thing in sorted_counts:
+            sorted_rows.append(AIGame.row_by_key(rows, thing[0]))
+        for row_to_play in sorted_rows:
+            for item in row_to_play:
+                if item[1]==Cube.Row.empty:
+                    try:
+                        self.cube.play_move(item[0][0],item[0][1], item[0][2], player.piece)
+                        print('played!')
+                        return
+                    except:
+                        print('uh oh')
+
+    def play(self):
+        self.cube.clear()
+        print('Welcome to 3D Tic Tac Toe!')
+        if not self.p1:
+            self.setup()
+        moves_remaining = 27
+        run = True
+        while run == True:
+            p1_go = True
+            print(self.cube)
+            while p1_go:
+                try:
+                    board = int(input('{0}, please make your move. Which board? '.format(self.p1.name)))
+                    row = int(input('Please enter the row number (0-2): '))
+                    column = int(input('Please enter the column number (0-2): '))
+
+                    try:
+                        self.cube.play_move(board, row, column, self.p1.piece)
+                        moves_remaining -= 1
+                        p1_go = False
+                    except ValueError:
+                        print('Uh oh, looks like that spot is taken. Try again!')
+                except:
+                    print("Uh oh, please try that again")
+
+            result = self.cube.check_wins()
+            if result != False and result in Cube.allowed:
+                print('{0} won!'.format(result))
+                print("Final Gameboard:\n\n{0}".format(str(self.cube)))
+                return
+            elif moves_remaining <= 0:
+                print("Cat's game!")
+                return
+
+            print(self.cube)
+            print("\n{0}'s turn".format(self.p2.name))
+            self.analyze_rows(self.p2)
+            moves_remaining -= 1
+            result = self.cube.check_wins()
+
+            if result != False and result in Cube.allowed:
+                print('{0} won!'.format(result))
+                print("Final Gameboard:\n\n{0}".format(str(self.cube)))
+                return
+            elif moves_remaining <= 0:
+                print("Cat's game!")
+                return
