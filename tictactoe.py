@@ -36,12 +36,6 @@ class Board:
                     return True
         return False
 
-    def check_opening(self, down, over):
-        # returns True if a space has an opening
-        if self.matrix[down][over] is not None:
-            return False
-        return True
-
     def get_spot(self, down, over):
         if self.matrix[down][over] is not None:
             return self.matrix[down][over]
@@ -64,13 +58,13 @@ class Board:
     def __setitem__(self, location, val):
         # sets the item at a single-integer location
         assert(location < (self.dimension**2))
-        if self.check_opening(location//self.dimension, location%self.dimension) == False:
+        if self.get_spot(location//self.dimension, location%self.dimension) != None:
             raise ValueError('This place is already taken. To override this place, use `set_val()`')
         self.matrix[location//self.dimension][location%self.dimension] = val
 
     def set_val(self, down, over, val, override=False):
         # sets the value at a coordinate pair
-        if not override and self.check_opening(down, over):
+        if not override and self.get_spot(down, over) == None:
             self.matrix[down][over] = val
         else:
             raise ValueError('This place is already taken')
@@ -207,12 +201,11 @@ class Cube:
                 row = Cube.Row(key_count)
                 key_count += 1
                 for s in range(3):
-                    result = self.boards[b].check_opening(r, s)
-                    value = self.boards[b].get_spot(r, s)
+                    result = self.boards[b].get_spot(r, s)
                     row.append_coords((b, r, s))
-                    if result == False:
-                        row.append_val(value)
-                    elif result == True:
+                    if result != None:
+                        row.append_val(result)
+                    elif result == None:
                         row.append_val(Cube.Row.empty)
                 rows.append(row)
         for b in range(3):
@@ -220,12 +213,11 @@ class Cube:
                 row = Cube.Row(key_count)
                 key_count += 1
                 for s in range(3):
-                    result = self.boards[b].check_opening(s, c)
-                    value = self.boards[b].get_spot(s,c)
+                    result = self.boards[b].get_spot(s, c)
                     row.append_coords((b, s, c))
-                    if result == False:
-                        row.append_val(value)
-                    elif result == True:
+                    if result != None:
+                        row.append_val(result)
+                    elif result == None:
                         row.append_val(Cube.Row.empty)
                 rows.append(row)
         for x in range(9):
@@ -363,9 +355,9 @@ class Cube:
         for b in range(3):
             for r in range(3):
                 for s in range(3):
-                    status = self.boards[b].check_opening(r,s)
+                    status = self.boards[b].get_spot(r,s)
                     print(status)
-                    if status == True:
+                    if status == None:
                         opens.append((b,r,s))
                     else:
                         continue

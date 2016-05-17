@@ -11,7 +11,6 @@ class TestCases(unittest.TestCase):
         lst = []
         possible_choices = ['x', 'o']
         self.assertFalse(bool(board), msg="The board should be empty")
-        self.assertTrue(board.check_opening(0,0), msg="The board should be empty")
         for x in range(9):
             num = random.randint(0, len(possible_choices)-1)
             board[x] = possible_choices[num]
@@ -23,7 +22,6 @@ class TestCases(unittest.TestCase):
         self.assertEqual(board.as_list(), lst, msg="Board not properly converting to list")
 
         self.assertTrue(bool(board), msg="The board has a value in it and should be True")
-        self.assertFalse(board.check_opening(0,0), msg="The board has a value at (0,0)")
 
         board.clear()
         self.assertFalse(board.check_win(), msg="When the board is empty, a win should be impossible")
