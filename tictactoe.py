@@ -97,6 +97,7 @@ class Board:
     def location_to_coordinates(location, dimension=3):
         # returns a tuple containing the (down, over) coordinates of a location
         return (location//dimension, location%dimension)
+
 class Cube:
     class Row:
         empty = "empty"
@@ -113,17 +114,13 @@ class Cube:
             return out
 
         def __iter__(self):
+            # iterates through the Row
             for coord, val in zip(self.coords, self.vals):
                 yield (coord, val)
 
         def __str__(self):
+            # returns the Row as a string (printed like a dict)
             return str(self.as_dict())
-
-        def append_val(self, val):
-            self.vals.append(val)
-
-        def append_coords(self, coords):
-            self.coords.append(coords)
 
     allowed = ['x', 'o']
     def __init__(self):
@@ -202,11 +199,11 @@ class Cube:
                 key_count += 1
                 for s in range(3):
                     result = self.boards[b].get_spot(r, s)
-                    row.append_coords((b, r, s))
+                    row.coords.append((b, r, s))
                     if result != None:
-                        row.append_val(result)
+                        row.vals.append(result)
                     elif result == None:
-                        row.append_val(Cube.Row.empty)
+                        row.vals.append(Cube.Row.empty)
                 rows.append(row)
         for b in range(3):
             for c in range(3):
@@ -214,11 +211,11 @@ class Cube:
                 key_count += 1
                 for s in range(3):
                     result = self.boards[b].get_spot(s, c)
-                    row.append_coords((b, s, c))
+                    row.coords.append((b, s, c))
                     if result != None:
-                        row.append_val(result)
+                        row.vals.append(result)
                     elif result == None:
-                        row.append_val(Cube.Row.empty)
+                        row.vals.append(Cube.Row.empty)
                 rows.append(row)
         for x in range(9):
             row = Cube.Row(key_count)
@@ -361,7 +358,6 @@ class Cube:
                         opens.append((b,r,s))
                     else:
                         continue
-        print('random :(')
         return random.choice(opens)
 class Player:
     # a class to manage players in games
