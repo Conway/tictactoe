@@ -1,6 +1,10 @@
 # changes
 
-# 5/16/16
+## 5/26/16
+ - Squashed a bug that allowed the computer to play twice each round
+ - Another bug was found that prevents the computer from defending the board. The cause still needs to be identified.
+
+## 5/16/16
  - Added an option for a human to play a computer (class `HumanAIGame`). Note that it's still a little buggy (for example it played 2 moves in 1 turn one time).
 
 ## 5/15/16

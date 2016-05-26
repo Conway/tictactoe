@@ -219,7 +219,6 @@ class Cube:
                 rows.append(row)
         for x in range(9):
             row = Cube.Row(key_count)
-            rows.append(row)
             key_count += 1
             coordinates = Board.location_to_coordinates(x)
             n1 = self.boards[0][x]
@@ -230,6 +229,8 @@ class Cube:
             row.vals.append(n3)
             for x in range(3):
                 row.coords.append((x, coordinates[0], coordinates[1]))
+            rows.append(row)
+
         # diagonals
         for x in range(3):
             # first set
@@ -348,6 +349,7 @@ class Cube:
         return rows
 
     def random_open_space(self):
+        # returns a random open space in the Cube
         opens = []
         for b in range(3):
             for r in range(3):
@@ -359,6 +361,7 @@ class Cube:
                     else:
                         continue
         return random.choice(opens)
+
 class Player:
     # a class to manage players in games
     def __init__(self, name, piece, computer=False):
@@ -372,6 +375,7 @@ class HumanGame:
         self.cube = Cube()
 
     def start(self):
+        # runs a game with 2 players
         self.cube.clear()
         print('Welcome to 3D Tic Tac Toe!')
         p1 = Player(input('Player 1, what is your name? '), 'x')
@@ -444,6 +448,7 @@ class AIGame:
 
     @staticmethod
     def score(x, o, player):
+        # determines the score of a space. a higher score gives a higher priority to a specific move/row.
         if player == 'x':
             if x == 2 and o == 0:
                 return 20 # if it can win on the next turn, make sure it happens
@@ -470,6 +475,7 @@ class AIGame:
 
     @staticmethod
     def row_by_key(lst, key):
+        # find which row matches the key. useful for storing things in dicts
         for item in lst:
             if key == item.key:
                 return item
@@ -488,6 +494,7 @@ class AIGame:
         if all_zero == True:
             random_space = self.cube.random_open_space()
             self.cube.play_move(random_space[0], random_space[1], random_space[2], player.piece)
+            return
         sorted_counts = sorted(counts.items(), key=operator.itemgetter(1), reverse=True)
         sorted_rows = []
         for thing in sorted_counts:
@@ -539,7 +546,7 @@ class HumanAIGame:
         self.p2 = Player('Computer', 'o', computer=True)
 
     def setup(self):
-        name = input("Hello, what's your name?")
+        name = input("Hello, what's your name? ")
         self.p1 = Player(name, 'x')
         print("Hello {0}, you are 'x'".format(name))
 
@@ -551,12 +558,13 @@ class HumanAIGame:
             count_x = row.vals.count('x')
             count_o = row.vals.count('o')
             score = AIGame.score(count_x, count_o, player.piece)
-            if score != 0:
+            if score != 0 or score < 0:
                 all_zero = False
             counts[row.key] = score
         if all_zero == True:
             random_space = self.cube.random_open_space()
             self.cube.play_move(random_space[0], random_space[1], random_space[2], player.piece)
+            return
         sorted_counts = sorted(counts.items(), key=operator.itemgetter(1), reverse=True)
         sorted_rows = []
         for thing in sorted_counts:
@@ -581,7 +589,7 @@ class HumanAIGame:
         while run == True:
             p1_go = True
             print(self.cube)
-            while p1_go:
+            while p1_go == True:
                 try:
                     board = int(input('{0}, please make your move. Which board? '.format(self.p1.name)))
                     row = int(input('Please enter the row number (0-2): '))
