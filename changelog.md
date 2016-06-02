@@ -1,5 +1,10 @@
 # changes
 
+## 6/1/16
+ - Cleaned up code
+ - Attempted to create a user interface using Flask, and jquery, but failed.
+ - Fixed more bugs
+
 ## 5/26/16
  - Squashed a bug that allowed the computer to play twice each round
  - Another bug was found that prevents the computer from defending the board. The cause still needs to be identified.
